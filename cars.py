@@ -146,7 +146,7 @@ while running:
                 crash_rect.center = [player.rect.right, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
     if score >= score_to_change_vehicle and not isinstance(player, Motorcycle):
     # Cambiar el vehículo a una moto
-        motorcycle_image = pygame.image.load('Juego-pygame/images/moto.png')
+        motorcycle_image = pygame.image.load('./images/moto.png')
         player = Motorcycle(player.rect.center[0],  player.rect.center[1], motorcycle_image)
         player_group.empty()
         player_group.add(player)
