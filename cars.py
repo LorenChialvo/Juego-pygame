@@ -67,7 +67,7 @@ class Vehicle(pygame.sprite.Sprite):
 class PlayerVehicle(Vehicle):
     
     def __init__(self, x, y):
-        image = pygame.image.load('BS-act/images/car.png')
+        image = pygame.image.load('./images/car.png')
         super().__init__(image, x, y)
         
 # sprite groups
@@ -82,46 +82,78 @@ player_group.add(player)
 image_filenames = ['pickup_truck.png', 'semi_trailer.png', 'taxi.png', 'van.png']
 vehicle_images = []
 for image_filename in image_filenames:
-    image = pygame.image.load('BS-act/images/' + image_filename)
+    image = pygame.image.load('./images/' + image_filename)
     vehicle_images.append(image)
     
 # load the crash image
-crash = pygame.image.load('BS-act/images/crash.png')
+crash = pygame.image.load('./images/crash.png')
 crash_rect = crash.get_rect()
-
+speed_increase_rate = 0.0015
+lane_change_speed = 2
+score_to_change_vehicle = 30
 # game loop
+
+keys_pressed_left = set()
+keys_pressed_right = set()
+
 running = True
 while running:
-    
+    speed_increase = speed * speed_increase_rate
+
     clock.tick(fps)
-    
+
+    # Dentro del bucle principal, en la sección de eventos:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
-            
-        # move the player's car using the left/right arrow keys
+
+        # Manejar teclas presionadas
         if event.type == KEYDOWN:
-            
-            if event.key == K_LEFT and player.rect.center[0] > left_lane:
-                player.rect.x -= 100
-            elif event.key == K_RIGHT and player.rect.center[0] < right_lane:
-                player.rect.x += 100
-                
-            # check if there's a side swipe collision after changing lanes
-            for vehicle in vehicle_group:
-                if pygame.sprite.collide_rect(player, vehicle):
-                    
-                    gameover = True
-                    
+            if event.key == K_LEFT:
+                keys_pressed_left.add(event.key)
+            elif event.key == K_RIGHT:
+                keys_pressed_right.add(event.key)
+        # Manejar teclas liberadas
+        elif event.type == KEYUP:
+            if event.key == K_LEFT:
+                keys_pressed_left.discard(event.key)
+            elif event.key == K_RIGHT:
+                keys_pressed_right.discard(event.key)
+
+    # Mover el vehículo basado en las teclas presionadas
+    if K_LEFT in keys_pressed_left and player.rect.center[0] > left_lane:
+        player.rect.x -= lane_change_speed * speed
+    elif K_RIGHT in keys_pressed_right and player.rect.center[0] < right_lane:
+        player.rect.x += lane_change_speed * speed
+
+    # Verificar colisión después de cambiar de carril
+    for vehicle in vehicle_group:
+        if pygame.sprite.collide_rect(player, vehicle):
+            gameover = True
+            if K_LEFT in keys_pressed_left:
+                player.rect.left = vehicle.rect.right
+                crash_rect.center = [player.rect.left, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
+            elif K_RIGHT in keys_pressed_right:
+                player.rect.right = vehicle.rect.left
+                crash_rect.center = [player.rect.right, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
                     # place the player's car next to other vehicle
                     # and determine where to position the crash image
-                    if event.key == K_LEFT:
-                        player.rect.left = vehicle.rect.right
-                        crash_rect.center = [player.rect.left, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
-                    elif event.key == K_RIGHT:
-                        player.rect.right = vehicle.rect.left
-                        crash_rect.center = [player.rect.right, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
-            
+            if event.key == K_LEFT:
+                player.rect.left = vehicle.rect.right
+                crash_rect.center = [player.rect.left, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
+            elif event.key == K_RIGHT:
+                player.rect.right = vehicle.rect.left
+                crash_rect.center = [player.rect.right, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
+    if score >= score_to_change_vehicle and not isinstance(player, Motorcycle):
+    # Cambiar el vehículo a una moto
+        motorcycle_image = pygame.image.load('Juego-pygame/images/moto.png')
+        player = Motorcycle(player.rect.center[0],  player.rect.center[1], motorcycle_image)
+        player_group.empty()
+        player_group.add(player)
+        # Ajustar la velocidad de aumento
+        speed_increase_rate = 0.0007  # 0.07% de aumento por segundo
+        speed_increase = speed * speed_increase_rate
+
             
     # draw the grass
     screen.fill(green)
