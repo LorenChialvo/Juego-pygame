@@ -55,7 +55,7 @@ class Vehicle(pygame.sprite.Sprite):
     def __init__(self, image, x, y):
         pygame.sprite.Sprite.__init__(self)
         
-        # scale the image down so it's not wider than the lane
+        #Escalamos la imagen asi no es mas grande que las lineas
         image_scale = 45 / image.get_rect().width
         new_width = image.get_rect().width * image_scale
         new_height = image.get_rect().height * image_scale
@@ -75,28 +75,27 @@ class Motorcycle(Vehicle):
     def __init__(self, x, y, image):
         super().__init__(image, x, y)
 
-# sprite groups
+# sprites
 player_group = pygame.sprite.Group()
 vehicle_group = pygame.sprite.Group()
 
-# create the player's car
+# el vehiculo del jugador
 player = PlayerVehicle(player_x, player_y)
 player_group.add(player)
 
-# load the vehicle images
+# cargar las imagenes de los vehiculos
 image_filenames = ['pickup_truck.png', 'semi_trailer.png', 'taxi.png', 'van.png']
 vehicle_images = []
 for image_filename in image_filenames:
     image = pygame.image.load('Juego-pygame/images/' + image_filename)
     vehicle_images.append(image)
     
-# load the crash image
+# cargar la imagen de choque
 crash = pygame.image.load('Juego-pygame/images/crash.png')
 crash_rect = crash.get_rect()
 speed_increase_rate = 0.0015
 lane_change_speed = 2
 score_to_change_vehicle = 20
-# game loop
 
 keys_pressed_left = set()
 keys_pressed_right = set()
@@ -141,8 +140,6 @@ while running:
             elif K_RIGHT in keys_pressed_right:
                 player.rect.right = vehicle.rect.left
                 crash_rect.center = [player.rect.right, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
-                    # place the player's car next to other vehicle
-                    # and determine where to position the crash image
             if event.key == K_LEFT:
                 player.rect.left = vehicle.rect.right
                 crash_rect.center = [player.rect.left, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
@@ -160,17 +157,17 @@ while running:
         speed_increase = speed * speed_increase_rate
 
             
-    # draw the grass
+    # pastooooo
     screen.fill(green)
     
-    # draw the road
+    # el camino
     pygame.draw.rect(screen, gray, road)
     
-    # draw the edge markers
+    # marcamos los lados
     pygame.draw.rect(screen, yellow, left_edge_marker)
     pygame.draw.rect(screen, yellow, right_edge_marker)
     
-    # draw the lane markers
+    # marcadores de carril
     lane_marker_move_y += speed * 2
     if lane_marker_move_y >= marker_height * 2:
         lane_marker_move_y = 0
@@ -178,13 +175,13 @@ while running:
         pygame.draw.rect(screen, white, (left_lane + 45, y + lane_marker_move_y, marker_width, marker_height))
         pygame.draw.rect(screen, white, (center_lane + 45, y + lane_marker_move_y, marker_width, marker_height))
         
-    # draw the player's car
+    # el jugador
     player_group.draw(screen)
     
-    # add a vehicle
+    # añadir un vehículo
     if len(vehicle_group) < 2:
         
-        # ensure there's enough gap between vehicles
+        # asegurarse que hay suficiente espacio entre los vehículos
         add_vehicle = True
         for vehicle in vehicle_group:
             if vehicle.rect.top < vehicle.rect.height * 1.5:
@@ -192,59 +189,58 @@ while running:
                 
         if add_vehicle:
             
-            # select a random lane
+            # seleccionar un carril aleatorio
             lane = random.choice(lanes)
             
-            # select a random vehicle image
+            # seleccionar una imagen de vehículo aleatoria
             image = random.choice(vehicle_images)
             vehicle = Vehicle(image, lane, height / -2)
             vehicle_group.add(vehicle)
     
-    # make the vehicles move
+    # mover los vehículos
     for vehicle in vehicle_group:
         vehicle.rect.y += speed
         
-        # remove vehicle once it goes off screen
+        # remover el vehículo cuando se salga de la pantalla
         if vehicle.rect.top >= height:
             vehicle.kill()
             
-            # add to score
             score += 1
             
-            # speed up the game after passing 5 vehicles
+            # aumentar la velocidad de juego al pasar 5 vehículos
             if score > 0 and score % 5 == 0:
                 speed += 1
     
-    # draw the vehicles
+    # dibujar los vehículos
     vehicle_group.draw(screen)
     
-    # display the score
+    # mostrar el puntaje
     font = pygame.font.Font(pygame.font.get_default_font(), 16)
     text = font.render('Score: ' + str(score), True, white)
     text_rect = text.get_rect()
     text_rect.center = (50, 400)
     screen.blit(text, text_rect)
     
-    # check if there's a head on collision
+    # comprobar si hay una colisión
     if pygame.sprite.spritecollide(player, vehicle_group, True):
         gameover = True
         crash_rect.center = [player.rect.center[0], player.rect.top]
             
-    # display game over
+    # mostrar el juego terminado
     if gameover:
         screen.blit(crash, crash_rect)
         
         pygame.draw.rect(screen, red, (0, 50, width, 100))
         
         font = pygame.font.Font(pygame.font.get_default_font(), 16)
-        text = font.render('Game over. Play again? (Enter Y or N)', True, white)
+        text = font.render('Chocaste! Jugas de nuevo? (Enter Y or N)', True, white)
         text_rect = text.get_rect()
         text_rect.center = (width / 2, 100)
         screen.blit(text, text_rect)
             
     pygame.display.update()
 
-    # wait for user's input to play again or exit
+    # esperar la entrada del usuario (y o n)
     while gameover:
         
         clock.tick(fps)
