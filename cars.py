@@ -67,7 +67,7 @@ class Vehicle(pygame.sprite.Sprite):
 class PlayerVehicle(Vehicle):
     
     def __init__(self, x, y):
-        image = pygame.image.load('./images/car.png')
+        image = pygame.image.load('Juego-pygame/images/car.png')
         super().__init__(image, x, y)
         
         
@@ -87,11 +87,11 @@ player_group.add(player)
 image_filenames = ['pickup_truck.png', 'semi_trailer.png', 'taxi.png', 'van.png']
 vehicle_images = []
 for image_filename in image_filenames:
-    image = pygame.image.load('./images/' + image_filename)
+    image = pygame.image.load('Juego-pygame/images/' + image_filename)
     vehicle_images.append(image)
     
 # load the crash image
-crash = pygame.image.load('./images/crash.png')
+crash = pygame.image.load('Juego-pygame/images/crash.png')
 crash_rect = crash.get_rect()
 speed_increase_rate = 0.0015
 lane_change_speed = 2
@@ -154,7 +154,7 @@ while running:
         motorcycle_image = pygame.image.load('./images/moto.png')
         player = Motorcycle(player.rect.center[0],  player.rect.center[1], motorcycle_image)
         player_group.empty()
-        player_group.add(player)
+        player_group.add(player)    
         # Ajustar la velocidad de aumento
         speed_increase_rate = 0.0007  # 0.07% de aumento por segundo
         speed_increase = speed * speed_increase_rate
