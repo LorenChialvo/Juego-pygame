@@ -4,48 +4,40 @@ import random
 
 pygame.init()
 
-# create the window
+# creamos la ventana
 width = 500
 height = 500
 screen_size = (width, height)
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption('Car Game')
 
-# colors
 gray = (100, 100, 100)
 green = (76, 208, 56)
 red = (200, 0, 0)
 white = (255, 255, 255)
 yellow = (255, 232, 0)
 
-# road and marker sizes
 road_width = 300
 marker_width = 10
 marker_height = 50
 
-# lane coordinates
 left_lane = 150
 center_lane = 250
 right_lane = 350
 lanes = [left_lane, center_lane, right_lane]
 
-# road and edge markers
 road = (100, 0, road_width, height)
 left_edge_marker = (95, 0, marker_width, height)
 right_edge_marker = (395, 0, marker_width, height)
 
-# for animating movement of the lane markers
 lane_marker_move_y = 0
 
-# player's starting coordinates
 player_x = 250
 player_y = 400
 
-# frame settings
 clock = pygame.time.Clock()
 fps = 120
 
-# game settings
 gameover = False
 speed = 2
 score = 0
@@ -233,7 +225,7 @@ while running:
         pygame.draw.rect(screen, red, (0, 50, width, 100))
         
         font = pygame.font.Font(pygame.font.get_default_font(), 16)
-        text = font.render('Chocaste! Jugas de nuevo? (Enter Y or N)', True, white)
+        text = font.render('Chocaste! Jugas de nuevo? ( S o N)', True, white)
         text_rect = text.get_rect()
         text_rect.center = (width / 2, 100)
         screen.blit(text, text_rect)
@@ -251,17 +243,15 @@ while running:
                 gameover = False
                 running = False
                 
-            # get the user's input (y or n)
             if event.type == KEYDOWN:
-                if event.key == K_y:
-                    # reset the game
+                if event.key == K_s:
+                    
                     gameover = False
                     speed = 2
                     score = 0
                     vehicle_group.empty()
                     player.rect.center = [player_x, player_y]
                 elif event.key == K_n:
-                    # exit the loops
                     gameover = False
                     running = False
 
