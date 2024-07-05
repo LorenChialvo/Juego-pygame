@@ -59,7 +59,7 @@ class Vehicle(pygame.sprite.Sprite):
 class PlayerVehicle(Vehicle):
     
     def __init__(self, x, y):
-        image = pygame.image.load('Juego-pygame/images/car.png')
+        image = pygame.image.load('./images/car.png')
         super().__init__(image, x, y)
         
         
@@ -79,11 +79,11 @@ player_group.add(player)
 image_filenames = ['pickup_truck.png', 'semi_trailer.png', 'taxi.png', 'van.png']
 vehicle_images = []
 for image_filename in image_filenames:
-    image = pygame.image.load('Juego-pygame/images/' + image_filename)
+    image = pygame.image.load('./images/' + image_filename)
     vehicle_images.append(image)
     
 # cargar la imagen de choque
-crash = pygame.image.load('Juego-pygame/images/crash.png')
+crash = pygame.image.load('./images/crash.png')
 crash_rect = crash.get_rect()
 speed_increase_rate = 0.0015
 lane_change_speed = 2
@@ -140,7 +140,7 @@ while running:
                 crash_rect.center = [player.rect.right, (player.rect.center[1] + vehicle.rect.center[1]) / 2]
     if score >= score_to_change_vehicle and not isinstance(player, Motorcycle):
     # Cambiar el vehículo a una moto
-        motorcycle_image = pygame.image.load('Juego-pygame/images/moto.png')
+        motorcycle_image = pygame.image.load('./images/moto.png')
         player = Motorcycle(player.rect.center[0],  player.rect.center[1], motorcycle_image)
         player_group.empty()
         player_group.add(player)    
